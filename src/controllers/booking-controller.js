@@ -12,7 +12,7 @@ async function createBooking(req, res) {
         return res.status(200).json(SuccessResponse);
     } catch(error) {
         ErrorResponse.error = error;
-        return res.status(error.statusCode).json(ErrorResponse);
+        return res.status(500).json(ErrorResponse);
     }
 }
 
