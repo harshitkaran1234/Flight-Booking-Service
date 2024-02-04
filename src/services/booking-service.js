@@ -2,7 +2,7 @@ const axios = require('axios');
 
 const AppError = require('../utils/errors/app-error');
 const { BookingRepository } = require('../repositories');
-const { ServerConfig } = require('../config');
+const { ServerConfig, Queue } = require('../config');
 const db = require('../models');
 const { Enums } = require('../utils/common');
 const { BOOKED, CANCELLED } = Enums.BOOKING_STATUS;
@@ -52,6 +52,11 @@ async function makePayment(data) {
         }
         // we assume payment is successful
         await bookingRepository.update(data.bookingId, {status: BOOKED}, transaction);
+        Queue.sendData({
+            text: `Booking successfully done for the flight ${data.bookingId}`,
+            subject: 'Flight booked',
+            recepientEmail: 'harsheet.new@gmail.com',
+        });
         await transaction.commit();
      } catch(error) {
         await transaction.rollback();
